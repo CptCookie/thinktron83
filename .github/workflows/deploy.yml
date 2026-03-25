@@ -1,0 +1,15 @@
+name: deplay
+on: [push]
+jobs:
+  FTP-Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{secret.ftp_server_name}}
+          username: ${{secret.ftp_user_name}}
+          password: ${{ secrets.ftp_password }}
