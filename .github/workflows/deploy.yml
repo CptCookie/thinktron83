@@ -7,9 +7,22 @@ jobs:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Install dependencies
+        run: corepack enable && yarn install --immutable
+
+      - name: 🏗️ Build
+        run: yarn build
+
       - name: 📂 Sync files
+        if: github.ref == 'refs/heads/main'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.ftp_server_name }}
           username: ${{ secrets.ftp_user_name }}
           password: ${{ secrets.ftp_password }}
+          local-dir: ./dist/
