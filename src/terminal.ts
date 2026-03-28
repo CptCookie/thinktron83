@@ -1,22 +1,43 @@
-class Shell {
-  canvas: HTMLCanvasElement;
-  inputBuffer: string;
+const TEXT_INPUT = /^[a-zA-Z\s]$/;
 
-  constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas;
-    this.inputBuffer = "";
-  }
+class ThinkTron {
+  input: HTMLInputElement;
+  output: Element;
+  fileSystem: any;
 
-  input(event: KeyboardEvent) {
-    if (event.key) {
-      this.inputBuffer += event.key;
+  constructor(terminalContainer: HTMLElement) {
+    let input = terminalContainer.getElementsByTagName("input");
+    let output = terminalContainer.getElementsByClassName("output");
+
+    if (input.length == 0) {
+      throw new Error("missing Input");
     }
+
+    if (output.length == 0) {
+      throw new Error("missing output");
+    }
+
+    this.input = input[0];
+    this.output = output[0];
   }
 
-  handleReturn() {}
-  render() {}
+  handleCommand(command: string) {
+    console.log("command: " + command);
+  }
 }
 
-let canvas = <HTMLCanvasElement>document.getElementById("terminal");
-let io = new Shell(canvas);
-console.log(io);
+function handleKeyEvent(event: KeyboardEvent) {
+  if (event.key === "Enter" && io) {
+    let prompt = io.input.value;
+    io.input.value = "";
+    io.handleCommand(prompt);
+  }
+}
+
+let terminal = <HTMLDivElement>document.getElementById("terminal");
+let io: null | ThinkTron = null;
+if (terminal) {
+  io = new ThinkTron(terminal);
+  console.log(io);
+  io.input.addEventListener("keypress", handleKeyEvent);
+}

@@ -8,15 +8,22 @@
             href="public/static/css/base.css"
         />
         <script type="module" src="./src/terminal.ts"></script>
+        <script type="module" src="./src/CrtShader.ts"></script>
+        <script type="module" src="./src/FileSystem.ts"></script>
     </head>
     <body>
-        <script>
-            let canvas = document.getElementById("terminal");
-            Shell(canvas);
-            console.log(Shell);
-        </script>
-        <div class="center">
-            <canvas id="terminal" />
+        <div id="terminal">
+            <div class="output"></div>
+            <div class="input">
+                <span>$ </span>
+                <input
+                    id="promt"
+                    onblur="this.focus()"
+                    autofocus
+                    spellcheck="false"
+                />
+            </div>
         </div>
+        <canvas id="crt" />
     </body>
 </html>
