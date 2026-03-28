@@ -1,16 +1,19 @@
+@import "./terminal.css";
+@import "./vars.css";
+
 @font-face {
     font-family: "Retrocide";
     src:
-        url("/fonts/Retrocide.woff2") format("woff2"),
-        url("/fonts/Retrocide.ttf") format("truetype"),
-        url("/fonts/Retrocide.otf") format("opentype");
+        url("/public/static/fonts/Retrocide.woff2") format("woff2"),
+        url("/public/static/fonts/Retrocide.ttf") format("truetype"),
+        url("/public/static/fonts/Retrocide.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
 html {
-    background-color: #060606;
+    background-color: var(--background);
 }
 
 body {
@@ -18,13 +21,11 @@ body {
     width: 100dvw;
     overflow: hidden; /* Hide overflow */
 
-    background-color: #060606;
+    background-color: var(--background);
     font-family: "Retrocide";
+    font-size: 20px;
+    font-weight: bold;
     color: #c66e03;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 progress {
@@ -36,13 +37,13 @@ progress {
 }
 
 progress::-moz-progress-bar {
-    background: #060606;
+    background: var(--background);
 }
 progress::-moz-progress-value {
     background: #c66e03;
 }
 progress::-webkit-progress-bar {
-    background: #060606;
+    background: var(--background);
 }
 progress::-webkit-progress-value {
     background-color: #c66e03;

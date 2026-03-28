@@ -1,0 +1,29 @@
+#promt {
+    width: 96%;
+    background-color: var(--background);
+    border: none;
+    border-color: none;
+    border-width: 0px;
+    color: var(--main);
+    caret-color: var(--main);
+    font-family: "Retrocide";
+    font-size: 20px;
+}
+
+#promt:focus {
+    outline: none;
+}
+
+#terminal {
+    padding: 1rem;
+}
+
+#crt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
