@@ -1,7 +1,5 @@
 import { FileSystem } from "./FileSystem";
 
-const TEXT_INPUT = /^[a-zA-Z\s]$/;
-
 class ThinkTron {
   input: HTMLInputElement;
   output: Element;
