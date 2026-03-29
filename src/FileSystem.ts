@@ -2,8 +2,6 @@
 //
 //
 //
-type Path = string[];
-
 enum NodeType {
   Dir,
   File,
@@ -26,7 +24,7 @@ abstract class DirectoryNode {
   }
 }
 
-class File extends DirectoryNode {
+export class File extends DirectoryNode {
   type = NodeType.File as const;
   load: () => Promise<{ default: string }>;
 

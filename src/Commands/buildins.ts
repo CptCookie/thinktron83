@@ -5,7 +5,7 @@ export class PWD extends Command {
 
   help() {}
 
-  execute(extra: string): void {
+  execute(_: string): void {
     if (this.isTerminalConnected()) {
       let currentPath = this.terminal.fileSystem.getCurrentPath();
       this.terminal.println(currentPath.join("/"));
@@ -17,7 +17,7 @@ export class LS extends Command {
 
   help() {}
 
-  execute(extra: string): void {
+  execute(_: string): void {
     if (this.isTerminalConnected()) {
       let files = this.terminal.fileSystem.currentDir.childs.filter(
         (c) => !c.name.startsWith("."),

@@ -19,16 +19,4 @@ export class Directory {
       this.childs = nodes;
     }
   }
-
-  private addChild(path: string[], node: Directory | File) {
-    if (path.length === 0) {
-      this.childs.push(node);
-    }
-  }
-
-  private getDir(name: string) {
-    let matches = this.childs.filter((c) => c.name === name);
-    if (matches.length === 0) {
-    }
-  }
 }
