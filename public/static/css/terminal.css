@@ -27,3 +27,11 @@
     pointer-events: none;
     mix-blend-mode: screen;
 }
+
+pre {
+    color: var(--main);
+    caret-color: var(--main);
+    font-family: "Retrocide";
+    font-size: 20px;
+    margin: 0.2rem 0rem 0.2rem 0rem;
+}

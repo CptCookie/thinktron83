@@ -40,7 +40,7 @@ export class ThinkTron {
   }
 
   println(print: string) {
-    let line = document.createElement("div");
+    let line = document.createElement("pre");
     line.className = "out-line";
     line.innerText = print;
     this.output.appendChild(line);

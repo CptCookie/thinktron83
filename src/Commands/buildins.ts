@@ -23,7 +23,7 @@ export class LS extends Command {
         (c) => !c.name.startsWith("."),
       );
       let fileNames = files.map((c) => c.name);
-      this.terminal.println(fileNames.join("  "));
+      this.terminal.println(fileNames.join("\t"));
     }
   }
 }
