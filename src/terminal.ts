@@ -31,7 +31,6 @@ export class ThinkTron {
   }
 
   handleCommand(command: string) {
-    let out: string;
     console.log(command);
     if (command in this.commands) {
       this.commands[command].execute(command);
