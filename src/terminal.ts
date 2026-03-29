@@ -1,9 +1,11 @@
+import { Command } from "./Commands";
 import { FileSystem } from "./FileSystem";
 
-class ThinkTron {
+export class ThinkTron {
   input: HTMLInputElement;
   output: Element;
-  fs: FileSystem;
+  fileSystem: FileSystem;
+  commands: Record<string, Command> = {};
 
   constructor(terminalContainer: HTMLElement) {
     let input = terminalContainer.getElementsByTagName("input");
@@ -19,11 +21,30 @@ class ThinkTron {
 
     this.input = input[0];
     this.output = output[0];
-    this.fs = new FileSystem();
+    this.fileSystem = new FileSystem();
+    this.initCommands();
+  }
+
+  initCommands() {
+    this.commands = Command.getAllCommands();
+    Object.values(this.commands).forEach((c) => c.connectTerminal(this));
   }
 
   handleCommand(command: string) {
-    console.log("command: " + command);
+    let out: string;
+    console.log(command);
+    if (command in this.commands) {
+      this.commands[command].execute(command);
+    } else {
+      this.println(`Command not found "${command}"`);
+    }
+  }
+
+  println(print: string) {
+    let line = document.createElement("div");
+    line.className = "out-line";
+    line.innerText = print;
+    this.output.appendChild(line);
   }
 }
 
@@ -31,12 +52,13 @@ function handleKeyEvent(event: KeyboardEvent) {
   if (event.key === "Enter" && io) {
     let prompt = io.input.value;
     io.input.value = "";
+    io.println("$ " + prompt);
     io.handleCommand(prompt);
   }
 }
 
 let terminal = <HTMLDivElement>document.getElementById("terminal");
-let io: null | ThinkTron = null;
+export let io: null | ThinkTron = null;
 if (terminal) {
   io = new ThinkTron(terminal);
   console.log(io);
