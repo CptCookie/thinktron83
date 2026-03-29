@@ -5,12 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Get latest code
-        uses: actions/checkout@v4
+        uses: actions/checkout
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node
         with:
-          node-version: 22
+          node-version: 24
 
       - name: 📦 Install dependencies
         run: corepack enable && yarn install --immutable
