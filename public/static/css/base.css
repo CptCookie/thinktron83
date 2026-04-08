@@ -12,6 +12,14 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: "DeterminationMono";
+    src: url("/public/static/fonts/DeterminationMono.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 html {
     background-color: var(--background);
 }
@@ -22,8 +30,8 @@ body {
     overflow: hidden; /* Hide overflow */
 
     background-color: var(--background);
-    font-family: "Retrocide";
-    font-size: 20px;
+    font-family: "DeterminationMono";
+    font-size: 30px;
     font-weight: bold;
     color: #c66e03;
 }

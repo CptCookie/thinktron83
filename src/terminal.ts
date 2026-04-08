@@ -1,11 +1,13 @@
 import { Command } from "./Commands";
 import { FileSystem } from "./FileSystem";
 
-export class ThinkTron {
+class ThinkTron {
   input: HTMLInputElement;
   output: Element;
   fileSystem: FileSystem;
   commands: Record<string, Command> = {};
+  repl: any; // terminal repl will live here
+  runtime: any; //active programm or command lives here
 
   constructor(terminalContainer: HTMLElement) {
     let input = terminalContainer.getElementsByTagName("input");
@@ -23,12 +25,23 @@ export class ThinkTron {
     this.output = output[0];
     this.fileSystem = new FileSystem();
     this.initCommands();
+
+    terminalContainer.addEventListener("keydown", this.handleKeyEvent);
   }
 
   initCommands() {
     this.commands = Command.getAllCommands();
     Object.values(this.commands).forEach((c) => c.connectTerminal(this));
   }
+
+  handleKeyEvent = (event: KeyboardEvent) => {
+    if (event.key === "Enter" && io) {
+      let prompt = io.input.value.trim();
+      io.input.value = "";
+      io.println("$ " + prompt);
+      io.handleCommand(prompt);
+    }
+  };
 
   handleCommand(command: string) {
     console.log(command);
@@ -47,19 +60,11 @@ export class ThinkTron {
   }
 }
 
-function handleKeyEvent(event: KeyboardEvent) {
-  if (event.key === "Enter" && io) {
-    let prompt = io.input.value;
-    io.input.value = "";
-    io.println("$ " + prompt);
-    io.handleCommand(prompt);
-  }
-}
-
 let terminal = <HTMLDivElement>document.getElementById("terminal");
 export let io: null | ThinkTron = null;
 if (terminal) {
   io = new ThinkTron(terminal);
   console.log(io);
-  io.input.addEventListener("keypress", handleKeyEvent);
 }
+
+export default ThinkTron;

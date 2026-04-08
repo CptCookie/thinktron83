@@ -1,4 +1,4 @@
-import { ThinkTron } from "../terminal";
+import type ThinkTron from "../terminal";
 
 export abstract class Command {
   private static registry: Record<string, Command> = {};

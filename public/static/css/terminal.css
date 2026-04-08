@@ -6,8 +6,8 @@
     border-width: 0px;
     color: var(--main);
     caret-color: var(--main);
-    font-family: "Retrocide";
-    font-size: 20px;
+    font-family: "DeterminationMono";
+    font-size: 30px;
 }
 
 #promt:focus {
@@ -16,6 +16,7 @@
 
 #terminal {
     padding: 1rem;
+    filter: blur(0.7px);
 }
 
 #crt {
@@ -31,7 +32,7 @@
 pre {
     color: var(--main);
     caret-color: var(--main);
-    font-family: "Retrocide";
-    font-size: 20px;
+    font-family: "DeterminationMono";
+    font-size: 30px;
     margin: 0.2rem 0rem 0.2rem 0rem;
 }

@@ -1,7 +1,3 @@
-// console.log(import.meta.glob("/public/fs/**/*"));
-//
-//
-//
 enum NodeType {
   Dir,
   File,

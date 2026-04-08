@@ -28,5 +28,24 @@ export class LS extends Command {
   }
 }
 
+export class Clear extends Command {
+  command = "clear";
+
+  help() {}
+
+  execute(_: string): void {
+    if (this.isTerminalConnected()) {
+      // TODO find a way to not cop
+      let elements = Array.from(
+        this.terminal.output.getElementsByTagName("pre"),
+      );
+      for (let e of elements) {
+        e.remove();
+      }
+    }
+  }
+}
+
 Command.register(new LS());
 Command.register(new PWD());
+Command.register(new Clear());
