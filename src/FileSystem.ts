@@ -18,6 +18,8 @@ abstract class DirectoryNode {
   isFile(): this is File {
     return this.type === NodeType.File;
   }
+
+  abstract getPath(path: string[]): DirectoryNode;
 }
 
 export class File extends DirectoryNode {
@@ -27,6 +29,14 @@ export class File extends DirectoryNode {
   constructor(name: string, loader: () => Promise<{ default: string }>) {
     super(name);
     this.load = loader;
+  }
+
+  getPath(path: string[]): File {
+    if (path.length > 0) {
+      throw new Error(`${this.name} is not a valid directory`);
+    }
+
+    return this;
   }
 }
 
@@ -74,6 +84,37 @@ class Directory extends DirectoryNode {
       return matches[0];
     }
   }
+
+  private getChild(name: string): Directory | File | undefined {
+    for (let c of this.childs) {
+      if (c.name === name) {
+        return c;
+      }
+    }
+  }
+
+  public getPath(path: string[]): Directory | File {
+    console.log("getPath: " + path.toString());
+    if (path.length === 0) {
+      return this;
+    }
+
+    let [head, ...tail] = path;
+
+    if (head == ".") {
+      return this.getPath(tail);
+    }
+
+    if (head == "..") {
+      return this.parent.getPath(tail);
+    }
+
+    let child = this.getChild(head);
+    if (!child) {
+      throw new Error("Unknown Path");
+    }
+    return child.getPath(tail);
+  }
 }
 
 export class FileSystem {
@@ -102,8 +143,9 @@ export class FileSystem {
 
     while (true) {
       path.push(current.name);
+      current = current.parent;
 
-      if (current === this.root) {
+      if (current.name == this.root.name) {
         return path.reverse();
       }
     }
@@ -122,5 +164,21 @@ export class FileSystem {
     } else {
       return [files.map((c) => c.name).join("\t")];
     }
+  }
+
+  cd(path: string[]) {
+    console.log("cd " + path);
+    let start = this.currentDir;
+    if (path[0] === "") {
+      start = this.root;
+      path = path.slice(1);
+    }
+    let filesysNode = start.getPath(path);
+    if (filesysNode.isFile()) {
+      throw new Error(`${path} is not a valid directory`);
+    }
+
+    this.currentDir = filesysNode;
+    console.log(this.currentDir.name);
   }
 }

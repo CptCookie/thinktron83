@@ -3,9 +3,9 @@ import type ThinkTron from "../terminal";
 export abstract class Command {
   private static registry: Record<string, Command> = {};
   abstract command: string;
-  terminal?: ThinkTron;
 
   static register(instance: Command) {
+    console.log("register " + instance.command);
     Command.registry[instance.command] = instance;
   }
 
@@ -13,14 +13,13 @@ export abstract class Command {
     return Command.registry;
   }
 
-  connectTerminal(terminal: ThinkTron) {
-    this.terminal = terminal;
-  }
-
   abstract help(): void;
-  abstract execute(extra: string): void;
+  abstract execute(terminal: ThinkTron, extra: string): void;
 
-  isTerminalConnected(): this is this & { terminal: ThinkTron } {
-    return this.terminal != undefined;
+  get_options(prompt: string): string[] {
+    return prompt
+      .split(" ")
+      .filter((n) => n.startsWith("-") && !n.startsWith("--"))
+      .flatMap((c) => Array.from(c.slice(1, c.length)));
   }
 }

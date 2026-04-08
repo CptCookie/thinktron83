@@ -24,14 +24,9 @@ class ThinkTron {
     this.input = input[0];
     this.output = output[0];
     this.fileSystem = new FileSystem();
-    this.initCommands();
+    this.commands = Command.getAllCommands();
 
     terminalContainer.addEventListener("keydown", this.handleKeyEvent);
-  }
-
-  initCommands() {
-    this.commands = Command.getAllCommands();
-    Object.values(this.commands).forEach((c) => c.connectTerminal(this));
   }
 
   handleKeyEvent = (event: KeyboardEvent) => {
@@ -43,17 +38,19 @@ class ThinkTron {
     }
   };
 
-  handleCommand(command: string) {
+  handleCommand(prompt: string) {
+    let command = prompt.split(" ")[0];
     console.log(command);
     if (command in this.commands) {
-      this.commands[command].execute(command);
+      console.log(`calling command ${command} with ${prompt}`);
+      this.commands[command].execute(this, prompt);
     } else {
       this.println(`Command not found "${command}"`);
     }
   }
 
   println(print: string) {
-    let line = document.createElement("pre");
+    let line = document.createElement("div");
     line.className = "out-line";
     line.innerText = print;
     this.output.appendChild(line);

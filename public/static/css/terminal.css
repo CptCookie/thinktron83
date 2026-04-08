@@ -1,13 +1,9 @@
 #promt {
     width: 96%;
     background-color: var(--background);
-    border: none;
-    border-color: none;
     border-width: 0px;
     color: var(--main);
     caret-color: var(--main);
-    font-family: "DeterminationMono";
-    font-size: 30px;
 }
 
 #promt:focus {
@@ -16,7 +12,7 @@
 
 #terminal {
     padding: 1rem;
-    filter: blur(0.7px);
+    filter: blur(0.6px);
 }
 
 #crt {
@@ -29,10 +25,8 @@
     mix-blend-mode: screen;
 }
 
-pre {
+.out-line {
     color: var(--main);
     caret-color: var(--main);
-    font-family: "DeterminationMono";
-    font-size: 30px;
     margin: 0.2rem 0rem 0.2rem 0rem;
 }

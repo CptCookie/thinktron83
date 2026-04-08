@@ -2,22 +2,17 @@
 @import "./vars.css";
 
 @font-face {
-    font-family: "Retrocide";
-    src:
-        url("/public/static/fonts/Retrocide.woff2") format("woff2"),
-        url("/public/static/fonts/Retrocide.ttf") format("truetype"),
-        url("/public/static/fonts/Retrocide.otf") format("opentype");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
     font-family: "DeterminationMono";
     src: url("/public/static/fonts/DeterminationMono.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
+}
+
+* {
+    font-family: "DeterminationMono";
+    font-size: 30px;
+    font-weight: bold;
 }
 
 html {
@@ -30,35 +25,5 @@ body {
     overflow: hidden; /* Hide overflow */
 
     background-color: var(--background);
-    font-family: "DeterminationMono";
-    font-size: 30px;
-    font-weight: bold;
     color: #c66e03;
-}
-
-progress {
-    color: #c66e03;
-    border-radius: 0;
-    min-width: 50vw;
-    border-style: solid;
-    border-width: 3px;
-}
-
-progress::-moz-progress-bar {
-    background: var(--background);
-}
-progress::-moz-progress-value {
-    background: #c66e03;
-}
-progress::-webkit-progress-bar {
-    background: var(--background);
-}
-progress::-webkit-progress-value {
-    background-color: #c66e03;
-}
-
-.center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
