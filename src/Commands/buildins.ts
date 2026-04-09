@@ -33,13 +33,7 @@ export class Clear extends Command {
   help() {}
 
   execute(terminal: ThinkTron, _: string): void {
-    // TODO find a way to not copy the element references
-    let elements = Array.from(
-      terminal.output.getElementsByClassName("out-line"),
-    );
-    for (let e of elements) {
-      e.remove();
-    }
+    terminal.output.replaceChildren();
   }
 }
 
@@ -49,7 +43,7 @@ export class Cd extends Command {
   help() {}
 
   execute(terminal: ThinkTron, extra: string): void {
-    let [cd, pathString, ..._] = extra.split(" ");
+    let [_command, pathString, ..._] = extra.split(" ");
     let path = pathString.split("/");
     terminal.fileSystem.cd(path);
     console.log(terminal.fileSystem.currentDir);
