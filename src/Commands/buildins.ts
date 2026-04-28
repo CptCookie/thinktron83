@@ -1,4 +1,4 @@
-import type ThinkTron from "../terminal";
+import Shell from "../Shell";
 import { Command } from "./base";
 
 export class Pwd extends Command {
@@ -6,9 +6,9 @@ export class Pwd extends Command {
 
   help() {}
 
-  execute(terminal: ThinkTron, _: string): void {
-    let currentPath = terminal.fileSystem.getCurrentPath();
-    terminal.println(currentPath.join("/"));
+  execute(shell: Shell, _args: string) {
+    let currentPath = shell.fileSystem.getCurrentPath();
+    shell.out.printLine(currentPath.join("/"));
   }
 }
 
@@ -17,13 +17,13 @@ export class Ls extends Command {
 
   help() {}
 
-  execute(terminal: ThinkTron, prompt: string): void {
-    console.log(this.get_options(prompt));
-    let files = terminal.fileSystem.currentDir.childs.filter(
+  execute(shell: Shell, _args: string) {
+    console.log(this.get_options(_args));
+    let files = shell.fileSystem.currentDir.childs.filter(
       (c) => !c.name.startsWith("."),
     );
     let fileNames = files.map((c) => c.name);
-    terminal.println(fileNames.join("\t"));
+    shell.out.printLine(fileNames.join("\t"));
   }
 }
 
@@ -32,8 +32,8 @@ export class Clear extends Command {
 
   help() {}
 
-  execute(terminal: ThinkTron, _: string): void {
-    terminal.output.replaceChildren();
+  execute(shell: Shell, _args: string) {
+    return shell.out.clear;
   }
 }
 
@@ -42,11 +42,10 @@ export class Cd extends Command {
 
   help() {}
 
-  execute(terminal: ThinkTron, extra: string): void {
-    let [_command, pathString, ..._] = extra.split(" ");
+  execute(shell: Shell, _args: string) {
+    let [_command, pathString, ..._] = _args.split(" ");
     let path = pathString.split("/");
-    terminal.fileSystem.cd(path);
-    console.log(terminal.fileSystem.currentDir);
+    shell.fileSystem.cd(path);
   }
 }
 

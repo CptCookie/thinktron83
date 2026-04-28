@@ -30,3 +30,7 @@
     caret-color: var(--main);
     margin: 0.2rem 0rem 0.2rem 0rem;
 }
+
+.error {
+    color: var(--error) !important;
+}

@@ -1,2 +1,2 @@
 export { Command } from "./base";
-export { Pwd } from "./buildins";
+export { Clear } from "./buildins";

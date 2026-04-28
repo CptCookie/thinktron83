@@ -1,4 +1,4 @@
-import type ThinkTron from "../terminal";
+import type Shell from "../Shell";
 
 export abstract class Command {
   private static registry: Record<string, Command> = {};
@@ -14,7 +14,7 @@ export abstract class Command {
   }
 
   abstract help(): void;
-  abstract execute(terminal: ThinkTron, extra: string): void;
+  abstract execute(shell: Shell, extra: string): void;
 
   get_options(prompt: string): string[] {
     return prompt
