@@ -1,6 +1,9 @@
+import type Shell from "../Shell";
+
 enum NodeType {
   Dir,
   File,
+  Program,
 }
 
 abstract class DirectoryNode {
@@ -17,6 +20,10 @@ abstract class DirectoryNode {
 
   isFile(): this is File {
     return this.type === NodeType.File;
+  }
+
+  isProgram(): this is Program {
+    return this.type === NodeType.Program;
   }
 
   abstract getPath(path: string[]): DirectoryNode;
@@ -40,10 +47,39 @@ export class File extends DirectoryNode {
   }
 }
 
+export class Program extends DirectoryNode {
+  type = NodeType.Program as const;
+  load: () => Promise<{ default: string }>;
+
+  constructor(name: string, loader: () => Promise<{ default: string }>) {
+    super(name);
+    this.load = loader;
+  }
+
+  getPath(path: string[]): Program {
+    if (path.length > 0) {
+      throw new Error(`${this.name} is not a valid directory`);
+    }
+
+    return this;
+  }
+
+  async execute(shell: Shell, prompt: string): Promise<void> {
+    let result: any = await this.load();
+    try {
+      await result.default();
+    } catch (e) {
+      console.error(e);
+    }
+
+    return result.run();
+  }
+}
+
 class Directory extends DirectoryNode {
   type = NodeType.Dir as const;
   parent: Directory;
-  childs: (File | Directory)[];
+  childs: (File | Directory | Program)[];
 
   constructor(name: string, parent?: Directory, nodes?: (File | Directory)[]) {
     super(name);
@@ -60,7 +96,7 @@ class Directory extends DirectoryNode {
     }
   }
 
-  addChild(path: string[], node: Directory | File) {
+  addChild(path: string[], node: Directory | File | Program) {
     // no path remaining so we have found the parent
     if (path.length === 0) {
       this.childs.push(node);
@@ -85,7 +121,7 @@ class Directory extends DirectoryNode {
     }
   }
 
-  private getChild(name: string): Directory | File | undefined {
+  private getChild(name: string): Directory | File | Program | undefined {
     for (let c of this.childs) {
       if (c.name === name) {
         return c;
@@ -93,8 +129,7 @@ class Directory extends DirectoryNode {
     }
   }
 
-  public getPath(path: string[]): Directory | File {
-    console.log("getPath: " + path.toString());
+  public getPath(path: string[]): Directory | File | Program {
     if (path.length === 0) {
       return this;
     }
@@ -125,9 +160,21 @@ export class FileSystem {
     this.root = new Directory("root");
     this.currentDir = this.root;
 
-    let files = import.meta.glob<{ default: string }>("/public/fs/**/*", {
-      query: "?raw",
+    let programs = import.meta.glob("/public/fs/bin/**/*.js");
+    Object.entries(programs).forEach(([k, v]) => {
+      let path: string[] = k.replace("/public/fs/", "").split("/");
+      let fileName = path.at(-1) || "unknow file";
+      let file = new Program(fileName, v as any);
+      path = path.slice(0, -1);
+      this.root.addChild(path, file);
     });
+
+    let files = import.meta.glob<{ default: string }>(
+      ["/public/fs/**/*", "!**/bin/**"],
+      {
+        query: "?raw",
+      },
+    );
     Object.entries(files).forEach(([k, v]) => {
       let path: string[] = k.replace("/public/fs/", "").split("/");
       let fileName = path.at(-1) || "unknow file";
@@ -135,6 +182,18 @@ export class FileSystem {
       path = path.slice(0, -1);
       this.root.addChild(path, file);
     });
+  }
+
+  getFile(name: string): File | undefined {
+    return this.currentDir.childs
+      .filter((c): c is File => c.isFile()) // thx TS [TS issue #29317] :(
+      .find((c) => c.name === name);
+  }
+
+  getProgram(name: string): Program | undefined {
+    return this.currentDir.childs
+      .filter((c): c is Program => c.isProgram()) // thx TS [TS issue #29317] :(
+      .find((c) => c.name === name);
   }
 
   getCurrentPath(): string[] {
@@ -167,18 +226,16 @@ export class FileSystem {
   }
 
   cd(path: string[]) {
-    console.log("cd " + path);
     let start = this.currentDir;
     if (path[0] === "") {
       start = this.root;
       path = path.slice(1);
     }
     let filesysNode = start.getPath(path);
-    if (filesysNode.isFile()) {
+    if (filesysNode.isFile() || filesysNode.isProgram()) {
       throw new Error(`${path} is not a valid directory`);
     }
 
     this.currentDir = filesysNode;
-    console.log(this.currentDir.name);
   }
 }

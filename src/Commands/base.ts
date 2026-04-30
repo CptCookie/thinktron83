@@ -5,7 +5,6 @@ export abstract class Command {
   abstract command: string;
 
   static register(instance: Command) {
-    console.log("register " + instance.command);
     Command.registry[instance.command] = instance;
   }
 

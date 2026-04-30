@@ -18,7 +18,6 @@ export class Ls extends Command {
   help() {}
 
   execute(shell: Shell, _args: string) {
-    console.log(this.get_options(_args));
     let files = shell.fileSystem.currentDir.childs.filter(
       (c) => !c.name.startsWith("."),
     );

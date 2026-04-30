@@ -7,7 +7,7 @@ class Shell {
   in: HTMLInputElement;
   fileSystem: FileSystem;
   commands: Record<string, Command> = {};
-  runtime: any; //active programm for later execution of WASM
+  runtime?: Promise<unknown>;
   session: string[] = [];
   sessionPtr: number = -1;
 
@@ -19,12 +19,17 @@ class Shell {
   }
 
   handleCommand(prompt: string) {
-    console.log(this.commands);
     this.session.push(prompt);
-
     let command = prompt.split(" ")[0];
     if (command in this.commands) {
       return this.commands[command].execute(this, prompt);
+    }
+
+    let file = this.fileSystem.getProgram(command);
+
+    if (file) {
+      this.runtime = file.execute(this, prompt);
+      this.runtime.then(() => console.log("Done"));
     } else {
       throw new Error(`Command not found "${command}"`);
     }

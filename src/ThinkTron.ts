@@ -32,7 +32,6 @@ class ThinkTron {
   }
 
   handleKeyEvent = (event: KeyboardEvent) => {
-    console.log(event.key);
     if (event.key === "ArrowUp") {
       this.sessionback();
     }
@@ -59,7 +58,6 @@ class ThinkTron {
     } else {
       this.sessionPtr = this.sessionPtr + 1;
     }
-    console.log(this.sessionPtr);
     if (this.sessionPtr === -1) {
       this.input.value = "";
     } else {
@@ -75,7 +73,6 @@ class ThinkTron {
       this.sessionPtr = this.sessionPtr - (1 % this.session.length);
       this.input.value = this.session[this.sessionPtr];
     }
-    console.log(this.sessionPtr);
   }
 
   sessionPtrReset() {
@@ -87,7 +84,6 @@ let terminal = <HTMLDivElement>document.getElementById("terminal");
 export let io: null | ThinkTron = null;
 if (terminal) {
   io = new ThinkTron("terminal");
-  console.log(io);
 }
 
 export default ThinkTron;
