@@ -1,11 +1,12 @@
 import Output from "./interface/output";
 import Shell from "./Shell";
+import Session from "./interface/session";
 
 class ThinkTron {
   input: HTMLInputElement;
   out: Output;
   shell: Shell;
-  session: string[] = [];
+  session: Session = new Session();
   sessionPtr = -1;
 
   constructor(containerId: string) {
@@ -34,49 +35,43 @@ class ThinkTron {
   handleKeyEvent = (event: KeyboardEvent) => {
     if (event.key === "ArrowUp") {
       this.sessionback();
-    }
-    if (event.key === "ArrowDown") {
+    } else if (event.key === "ArrowDown") {
       this.sessionforward();
     } else if (event.key === "Enter" && io) {
-      try {
-        let prompt = io.input.value.trim();
-        io.input.value = "";
-        this.out.printLine("$ " + prompt);
-        this.session.push(prompt);
-        this.shell.handleCommand(prompt);
-      } catch (e) {
-        this.out.printError(e as Error);
-      }
+      let prompt = this.input.value;
+      io.input.value = "";
+      this.out.printLine("$ " + prompt);
+      this.session.add(prompt);
+      this.handleCommand(prompt);
     } else {
-      this.sessionPtrReset();
+      this.session.resetReadIdx();
     }
   };
 
-  sessionback() {
-    if (this.sessionPtr === -1) {
-      this.sessionPtr = this.session.length - 1;
-    } else {
-      this.sessionPtr = this.sessionPtr + 1;
+  handleCommand(input: string) {
+    try {
+      let prompt = input.trim();
+      if (prompt == "") {
+        this.session.delete();
+      } else {
+        this.shell.handleCommand(prompt);
+      }
+    } catch (e) {
+      this.out.printError(e as Error);
     }
-    if (this.sessionPtr === -1) {
-      this.input.value = "";
-    } else {
-      this.input.value = this.session[this.sessionPtr];
+  }
+  sessionback() {
+    let e = this.session.getPrev();
+    if (e) {
+      this.input.value = e;
     }
   }
 
   sessionforward() {
-    if (this.sessionPtr === this.session.length - 1 || this.sessionPtr === -1) {
-      this.sessionPtr = -1;
-      this.input.value = "";
-    } else {
-      this.sessionPtr = this.sessionPtr - (1 % this.session.length);
-      this.input.value = this.session[this.sessionPtr];
+    let e = this.session.getNext();
+    if (e) {
+      this.input.value = e;
     }
-  }
-
-  sessionPtrReset() {
-    this.sessionPtr = -1;
   }
 }
 

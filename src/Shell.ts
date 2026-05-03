@@ -1,5 +1,5 @@
 import { Command } from "./Commands";
-import { FileSystem } from "./interface/fs";
+import { FileSystem, Program } from "./interface/fs";
 import { Output } from "./interface/output";
 
 class Shell {
@@ -28,10 +28,25 @@ class Shell {
     let file = this.fileSystem.getProgram(command);
 
     if (file) {
-      this.runtime = file.execute(this, prompt);
-      this.runtime.then(() => console.log("Done"));
+      this.startRuntime(file, prompt);
     } else {
       throw new Error(`Command not found "${command}"`);
+    }
+  }
+
+  startRuntime(prog: Program, prompt: string) {
+    // prepare render surface
+    // hide terminal container
+    // mount Canvas
+    this.runtime = prog.execute(this, prompt);
+    this.runtime
+      .then(() => console.log("Done"))
+      .finally(() => this.killRuntime.bind(this)());
+  }
+
+  killRuntime() {
+    if (this.runtime) {
+      this.runtime = undefined;
     }
   }
 }

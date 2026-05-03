@@ -1,7 +1,7 @@
 import type Shell from "../Shell";
 
 enum NodeType {
-  Dir,
+  Directory,
   File,
   Program,
 }
@@ -12,18 +12,6 @@ abstract class DirectoryNode {
 
   constructor(name: string) {
     this.name = name;
-  }
-
-  isDir(): this is Directory {
-    return this.type === NodeType.Dir;
-  }
-
-  isFile(): this is File {
-    return this.type === NodeType.File;
-  }
-
-  isProgram(): this is Program {
-    return this.type === NodeType.Program;
   }
 
   abstract getPath(path: string[]): DirectoryNode;
@@ -64,12 +52,11 @@ export class Program extends DirectoryNode {
     return this;
   }
 
-  async execute(shell: Shell, prompt: string): Promise<void> {
+  async execute(_shell: Shell, _prompt: string): Promise<void> {
     let result: any = await this.load();
-    try {
+    if ("default" in result) {
+      // make WASM ready for execution
       await result.default();
-    } catch (e) {
-      console.error(e);
     }
 
     return result.run();
@@ -77,7 +64,7 @@ export class Program extends DirectoryNode {
 }
 
 class Directory extends DirectoryNode {
-  type = NodeType.Dir as const;
+  type = NodeType.Directory as const;
   parent: Directory;
   childs: (File | Directory | Program)[];
 
@@ -114,7 +101,7 @@ class Directory extends DirectoryNode {
 
   private getDir(name: string): Directory | undefined {
     let matches = this.childs.filter(
-      (c): c is Directory => c.isDir() && c.name === name,
+      (c): c is Directory => isDir(c) && c.name === name,
     );
     if (matches.length === 1) {
       return matches[0];
@@ -186,14 +173,16 @@ export class FileSystem {
 
   getFile(name: string): File | undefined {
     return this.currentDir.childs
-      .filter((c): c is File => c.isFile()) // thx TS [TS issue #29317] :(
+      .filter((c): c is File => isFile(c)) // thx TS [TS issue #29317] :(
       .find((c) => c.name === name);
   }
 
   getProgram(name: string): Program | undefined {
-    return this.currentDir.childs
-      .filter((c): c is Program => c.isProgram()) // thx TS [TS issue #29317] :(
-      .find((c) => c.name === name);
+    let node = this.currentDir.getPath(name.split("/"));
+
+    if (isProgram(node)) {
+      return node;
+    }
   }
 
   getCurrentPath(): string[] {
@@ -232,10 +221,38 @@ export class FileSystem {
       path = path.slice(1);
     }
     let filesysNode = start.getPath(path);
-    if (filesysNode.isFile() || filesysNode.isProgram()) {
+
+    if (isDir(filesysNode)) {
+      this.currentDir = filesysNode;
+    } else {
       throw new Error(`${path} is not a valid directory`);
     }
-
-    this.currentDir = filesysNode;
   }
+}
+
+function isDir(n: unknown): n is Directory {
+  return (
+    n != null &&
+    typeof n === "object" &&
+    "type" in n &&
+    n.type === NodeType.Directory
+  );
+}
+
+function isFile(n: unknown): n is File {
+  return (
+    n != null &&
+    typeof n === "object" &&
+    "type" in n &&
+    n.type === NodeType.File
+  );
+}
+
+function isProgram(n: unknown): n is Program {
+  return (
+    n != null &&
+    typeof n === "object" &&
+    "type" in n &&
+    n.type === NodeType.Program
+  );
 }
