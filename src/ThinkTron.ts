@@ -51,7 +51,7 @@ class ThinkTron {
   handleCommand(input: string) {
     try {
       let prompt = input.trim();
-      if (prompt == "") {
+      if (prompt == "clear-history") {
         this.session.delete();
       } else {
         this.shell.handleCommand(prompt);
@@ -71,6 +71,8 @@ class ThinkTron {
     let e = this.session.getNext();
     if (e) {
       this.input.value = e;
+    } else {
+      this.input.value = "";
     }
   }
 }

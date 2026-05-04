@@ -15,6 +15,9 @@ jobs:
       - name: 📦 Install dependencies
         run: corepack enable && yarn install --immutable
 
+      - name: 🧪 Test
+        run: yarn test
+
       - name: 🏗️ Build
         run: yarn build
 

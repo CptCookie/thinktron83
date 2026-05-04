@@ -6,7 +6,6 @@ const SESSION_KEY = "terminalSession";
 
 class Session {
   buffer: string[];
-  realLength: number = 0;
   readIndex: number = -1;
   writeIndex: number = 0;
 
@@ -15,35 +14,33 @@ class Session {
     this.loadFromLocalStorage();
   }
 
+  get storedLen() {
+    return this.buffer.filter((v) => !!v).length;
+  }
+
   delete() {
     this.buffer = Array(this.maxSize);
     this.writeToLocalStorage();
   }
 
-  get isScrolling() {
-    return this.readIndex >= -1;
-  }
-
   resetReadIdx() {
     this.readIndex = (this.writeIndex - 1 + this.maxSize) % this.maxSize;
   }
+
   add(elem: string) {
     this.buffer[this.writeIndex] = elem;
     this.writeIndex = (this.writeIndex + 1) % this.maxSize;
     this.resetReadIdx();
     this.writeToLocalStorage();
-    this.calcRealLength();
-  }
-
-  calcRealLength() {
-    this.realLength = this.buffer.filter((v) => !!v).length;
   }
 
   getPrev(): string | undefined {
-    if (this.readIndex >= 0) {
+    let endPos = !!this.buffer.at(this.writeIndex) ? this.writeIndex : 0;
+    if (this.readIndex == endPos) {
+      return this.buffer.at(this.readIndex);
+    } else if (this.readIndex >= 0) {
       let e = this.buffer.at(this.readIndex);
-      this.readIndex =
-        (this.readIndex - 1 + this.buffer.length) % this.realLength;
+      this.readIndex = (this.readIndex - 1 + this.storedLen) % this.storedLen;
       return e;
     }
 
@@ -51,9 +48,14 @@ class Session {
   }
 
   getNext(): string | undefined {
+    let endpos = this.writeIndex - 1;
+    if (this.readIndex === endpos) {
+      // we did catch up with the write again and return to user import
+      return undefined;
+    }
+
     if (this.readIndex >= 0) {
-      this.readIndex =
-        (this.readIndex + 1 + this.buffer.length) % this.realLength;
+      this.readIndex = (this.readIndex + 1 + this.storedLen) % this.storedLen;
       return this.buffer.at(this.readIndex);
     }
 
