@@ -4,16 +4,14 @@ import { Output } from "./interface/output";
 
 class Shell {
   out: Output;
-  in: HTMLInputElement;
   fileSystem: FileSystem;
   commands: Record<string, Command> = {};
   runtime?: Promise<unknown>;
   session: string[] = [];
   sessionPtr: number = -1;
 
-  constructor(output: Output, input: HTMLInputElement) {
+  constructor(output: Output) {
     this.out = output;
-    this.in = input;
     this.fileSystem = new FileSystem();
     this.commands = Command.getAllCommands();
   }
@@ -30,7 +28,7 @@ class Shell {
     if (file) {
       this.startRuntime(file, prompt);
     } else {
-      throw new Error(`Command not found "${command}"`);
+      throw new Error(`Path or Command not found "${command}"`);
     }
   }
 

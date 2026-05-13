@@ -25,5 +25,5 @@ body {
     overflow: hidden; /* Hide overflow */
 
     background-color: var(--background);
-    color: #c66e03;
+    color: var(--main);
 }

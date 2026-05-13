@@ -26,6 +26,7 @@ export class Output {
   }
 
   clear() {
+    console.log("clear");
     this._element.innerHTML = "";
   }
 }

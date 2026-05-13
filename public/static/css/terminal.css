@@ -27,10 +27,43 @@
 
 .out-line {
     color: var(--main);
-    caret-color: var(--main);
-    margin: 0.2rem 0rem 0.2rem 0rem;
+    margin: 0rem 0rem 0.2rem 0rem;
 }
 
 .error {
     color: var(--error) !important;
+}
+
+.prompt {
+    margin-right: 0.5rem;
+}
+
+@keyframes cursorBlink {
+    0% {
+        background-color: var(--main);
+    }
+    49% {
+        background-color: var(--main);
+    }
+    50% {
+        background-color: var(--background);
+    }
+    99% {
+        background-color: var(--background);
+    }
+    100% {
+        background-color: var(--main);
+    }
+}
+
+.cursor {
+    width: 0.5rem;
+    height: 1rem;
+    background-color: var(--main);
+    position: absolute;
+    mix-blend-mode: difference;
+    z-index: 10;
+    /*animation: cursorBlink;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;*/
 }

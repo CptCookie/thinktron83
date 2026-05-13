@@ -178,10 +178,14 @@ export class FileSystem {
   }
 
   getProgram(name: string): Program | undefined {
-    let node = this.currentDir.getPath(name.split("/"));
+    try {
+      let node = this.currentDir.getPath(name.split("/"));
 
-    if (isProgram(node)) {
-      return node;
+      if (isProgram(node)) {
+        return node;
+      }
+    } catch (e) {
+      return undefined;
     }
   }
 

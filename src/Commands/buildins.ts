@@ -32,7 +32,7 @@ export class Clear extends Command {
   help() {}
 
   execute(shell: Shell, _args: string) {
-    return shell.out.clear;
+    return shell.out.clear();
   }
 }
 

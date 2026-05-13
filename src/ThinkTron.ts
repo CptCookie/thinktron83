@@ -1,9 +1,10 @@
+import Input from "./interface/input";
 import Output from "./interface/output";
-import Shell from "./Shell";
 import Session from "./interface/session";
+import Shell from "./Shell";
 
 class ThinkTron {
-  input: HTMLInputElement;
+  input: Input;
   out: Output;
   shell: Shell;
   session: Session = new Session();
@@ -14,37 +15,56 @@ class ThinkTron {
     if (!container) {
       throw new Error("can not find terminal container");
     }
-    let input = container.getElementsByTagName("input");
+    let input = container.getElementsByClassName("input");
     let output = container.getElementsByClassName("output");
 
     if (input.length == 0) {
       throw new Error("missing Input");
+    } else {
+      this.input = new Input(input[0]);
     }
 
     if (output.length == 0) {
       throw new Error("missing output");
+    } else {
+      this.out = new Output(output[0]);
     }
 
-    this.input = input[0];
-    this.out = new Output(output[0]);
-    this.shell = new Shell(this.out, this.input);
-
-    container.addEventListener("keydown", this.handleKeyEvent);
+    this.shell = new Shell(this.out);
+    document.addEventListener("keydown", this.handleKeyEvent);
   }
 
   handleKeyEvent = (event: KeyboardEvent) => {
+    console.log(event.key);
     if (event.key === "ArrowUp") {
       this.sessionback();
     } else if (event.key === "ArrowDown") {
       this.sessionforward();
+    } else if (event.key === "ArrowLeft") {
+      this.input.shiftLeft();
+    } else if (event.key === "ArrowRight") {
+      this.input.shiftRight();
+    } else if (event.key === "Backspace") {
+      length = 1;
+      if (event.ctrlKey) {
+        length = 100;
+      }
+      this.input.deleteLeft(length);
+    } else if (event.key === "Delete") {
+      length = 1;
+      if (event.ctrlKey) {
+        length = 100;
+      }
+      this.input.deleteRight(length);
     } else if (event.key === "Enter" && io) {
       let prompt = this.input.value;
       io.input.value = "";
-      this.out.printLine("$ " + prompt);
+      this.out.printLine(">_ " + prompt);
       this.session.add(prompt);
       this.handleCommand(prompt);
-    } else {
+    } else if (/^[\w\-\_\/\s]{1}$/.test(event.key)) {
       this.session.resetReadIdx();
+      this.input.handleKeyEvent(event);
     }
   };
 
