@@ -28,6 +28,7 @@
 .out-line {
     color: var(--main);
     margin: 0rem 0rem 0.2rem 0rem;
+    white-space-collapse: preserve;
 }
 
 .error {

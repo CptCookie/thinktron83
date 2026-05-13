@@ -2,6 +2,8 @@ import Input from "./interface/input";
 import Output from "./interface/output";
 import Session from "./interface/session";
 import Shell from "./Shell";
+import logo from "../public/static/logo/ascii.txt?raw";
+import { wait } from "./utils";
 
 class ThinkTron {
   input: Input;
@@ -18,12 +20,6 @@ class ThinkTron {
     let input = container.getElementsByClassName("input");
     let output = container.getElementsByClassName("output");
 
-    if (input.length == 0) {
-      throw new Error("missing Input");
-    } else {
-      this.input = new Input(input[0]);
-    }
-
     if (output.length == 0) {
       throw new Error("missing output");
     } else {
@@ -31,11 +27,20 @@ class ThinkTron {
     }
 
     this.shell = new Shell(this.out);
-    document.addEventListener("keydown", this.handleKeyEvent);
+    if (input.length == 0) {
+      throw new Error("missing Input");
+    } else {
+      this.input = new Input(input[0]);
+      this.input.disable();
+    }
+
+    this.start_sequence().finally(() => {
+      document.addEventListener("keydown", this.handleKeyEvent);
+      this.input.enable();
+    });
   }
 
   handleKeyEvent = (event: KeyboardEvent) => {
-    console.log(event.key);
     if (event.key === "ArrowUp") {
       this.sessionback();
     } else if (event.key === "ArrowDown") {
@@ -67,6 +72,13 @@ class ThinkTron {
       this.input.handleKeyEvent(event);
     }
   };
+
+  async start_sequence() {
+    for (let line of logo.split("\n")) {
+      await this.out.printLineSlow(line, 1);
+      await wait(10);
+    }
+  }
 
   handleCommand(input: string) {
     try {

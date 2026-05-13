@@ -1,10 +1,13 @@
 class Input {
+  root: Element;
   line: HTMLDivElement;
   prompt: HTMLSpanElement;
   left: HTMLSpanElement;
   right: HTMLSpanElement;
+  disabled: boolean = false;
 
   constructor(container: Element) {
+    this.root = container;
     this.line = document.createElement("div");
     this.line.className = "line input";
 
@@ -33,7 +36,9 @@ class Input {
   }
 
   handleKeyEvent(event: KeyboardEvent) {
-    this.left.textContent += event.key;
+    if (!this.disabled) {
+      this.left.textContent += event.key;
+    }
   }
 
   shiftLeft() {
@@ -61,6 +66,14 @@ class Input {
     if (this.right.textContent.length > 0) {
       this.right.textContent = this.right.textContent.slice(n);
     }
+  }
+
+  disable() {
+    this.root.removeChild(this.line);
+  }
+
+  enable() {
+    this.root.appendChild(this.line);
   }
 }
 

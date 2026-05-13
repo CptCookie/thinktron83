@@ -1,3 +1,5 @@
+import { wait } from "../utils";
+
 export class Output {
   private _element: Element;
 
@@ -23,6 +25,16 @@ export class Output {
     terminalLine.className = "out-line error";
     terminalLine.innerText = `${e}`;
     this._element.appendChild(terminalLine);
+  }
+
+  async printLineSlow(s: string, delay: number) {
+    let terminalLine = document.createElement("div");
+    terminalLine.className = "out-line";
+    this._element.appendChild(terminalLine);
+    for (let c of s) {
+      terminalLine.textContent = `${terminalLine.textContent}${c}`;
+      await wait(delay);
+    }
   }
 
   clear() {
