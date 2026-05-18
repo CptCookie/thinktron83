@@ -10,3 +10,13 @@ extern "C" {
 pub async fn run() {
     return log("Hello World");
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_name() {
+        assert!(true)
+    }
+}

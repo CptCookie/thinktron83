@@ -67,7 +67,7 @@ class ThinkTron {
       this.out.printLine(">_ " + prompt);
       this.session.add(prompt);
       this.handleCommand(prompt);
-    } else if (/^[\w\-\_\/\s]{1}$/.test(event.key)) {
+    } else if (/^[\w\-\_\/\s\.]{1}$/.test(event.key)) {
       this.session.resetReadIdx();
       this.input.handleKeyEvent(event);
     }

@@ -6,9 +6,8 @@
   "packageManager": "yarn@4.9.1",
   "scripts": {
     "dev": "yarn build:wasm && vite",
-    "build": "tsc && vite build",
-    "build:wasm": "yarn build:wasm:hello",
-    "build:wasm:hello": "cd wasm/hello && wasm-pack build --target web --out-dir ../../public/fs/bin/hello",
+    "build": "yarn build:wasm && tsc && vite build",
+    "build:wasm": "for dir in wasm/*/; do name=$(basename \"$dir\"); (cd \"$dir\" && wasm-pack build --target web --out-dir \"../../public/fs/bin/$name\"); done",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

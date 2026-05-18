@@ -4,6 +4,6 @@ build/
 .zed/
 .yarn/
 .DS_Store
-
+**/*.js
 # rust
 pkg/
