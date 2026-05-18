@@ -124,7 +124,7 @@ jobs:
           path: ./dist/
 
       - name: 📂 Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.ftp_server_name }}
           username: ${{ secrets.ftp_user_name }}
