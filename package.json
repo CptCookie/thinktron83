@@ -10,7 +10,8 @@
     "build:wasm": "sh scripts/build-wasm.sh",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "clean": "sh scripts/clean-project.sh"
   },
   "devDependencies": {
     "jsdom": "^29.1.1",
