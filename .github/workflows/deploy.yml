@@ -1,11 +1,54 @@
-name: deplay
+name: Pipeline
+
 on: [push]
+
 jobs:
-  FTP-Deploy:
+  test-rust:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+
+      - name: 🦀 Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 📦 Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            wasm/*/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('wasm/**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: 🦀 Test Rust
+        run: |
+          find wasm -mindepth 2 -maxdepth 2 -name "Cargo.toml" | while read manifest; do
+            cargo test --manifest-path "$manifest"
+          done
+
+  test-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: 📦 Install dependencies
+        run: corepack enable && yarn install --immutable
+
+      - name: 🧪 Test JS
+        run: yarn test
+
+  build:
+    needs: [test-rust, test-js]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
 
       - name: 🦀 Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -26,27 +69,43 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 24
+          cache: yarn
 
       - name: 📦 Install dependencies
         run: corepack enable && yarn install --immutable
 
-      - name: 🦀 Test Rust
-        run: |
-          find wasm -mindepth 2 -maxdepth 2 -name "Cargo.toml" | while read manifest; do
-            cargo test --manifest-path "$manifest"
-          done
+      - name: 📦 Cache wasm-pack
+        uses: actions/cache@v4
+        id: wasm-pack-cache
+        with:
+          path: ~/.cargo/bin/wasm-pack
+          key: wasm-pack-${{ runner.os }}
 
       - name: 🔧 Install wasm-pack
+        if: steps.wasm-pack-cache.outputs.cache-hit != 'true'
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-      - name: 🧪 Test
-        run: yarn test
 
       - name: 🏗️ Build
         run: yarn build
 
-      - name: 📂 Sync files
-        if: github.ref == 'refs/heads/main'
+      - name: 📤 Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ./dist/
+
+  deploy:
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Download dist
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: ./dist/
+
+      - name: 📂 Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.ftp_server_name }}
