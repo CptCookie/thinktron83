@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "yarn build:wasm && vite",
     "build": "yarn build:wasm && tsc && vite build",
-    "build:wasm": "for dir in wasm/*/; do name=$(basename \"$dir\"); (cd \"$dir\" && wasm-pack build --target web --out-dir \"../../public/fs/bin/$name\"); done",
+    "build:wasm": "sh scripts/build-wasm.sh",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
