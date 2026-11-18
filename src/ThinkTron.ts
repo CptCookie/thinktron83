@@ -76,7 +76,7 @@ class ThinkTron {
   async start_sequence() {
     for (let line of logo.split("\n")) {
       await this.out.printLineSlow(line, 1);
-      await wait(10);
+      await wait(1);
     }
   }
 
