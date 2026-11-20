@@ -52,6 +52,18 @@ describe("Markdown tests for block elements", () => {
     expect(mark).toEqual(html);
   });
 
+  it("paragraph ignored leeding spaces", () => {
+    const mark = renderMarkdown("  paragraph");
+    const html = parseHTML("<p>paragraph</p>");
+    expect(mark).toEqual(html);
+  });
+
+  it("paragraph ignored leeding tabs", () => {
+    const mark = renderMarkdown("\tparagraph");
+    const html = parseHTML("<p>paragraph</p>");
+    expect(mark).toEqual(html);
+  });
+
   it("paragraphs single linebreak", () => {
     const mark = renderMarkdown("paragraph 1\nstill paragraph 1");
     const html = parseHTML("<p>paragraph 1\nstill paragraph 1</p>");
@@ -61,6 +73,26 @@ describe("Markdown tests for block elements", () => {
   it("2 paragraphs", () => {
     const mark = renderMarkdown("paragraph 1\n\nparagraph 2");
     const html = parseHTML("<p>paragraph 1</p><p>paragraph 2</p>");
+    expect(mark).toEqual(html);
+  });
+
+  it("2 paragraphs with broader gap ", () => {
+    const mark = renderMarkdown("paragraph 1\n\n\nparagraph 2");
+    const html = parseHTML("<p>paragraph 1</p><p>paragraph 2</p>");
+    expect(mark).toEqual(html);
+  });
+
+  it("2 paragraphs with much broader gap ", () => {
+    const mark = renderMarkdown("paragraph 1\n\n\n\n\nparagraph 2");
+    const html = parseHTML("<p>paragraph 1</p><p>paragraph 2</p>");
+    expect(mark).toEqual(html);
+  });
+
+  it("2 paragraphs with broader gap ", () => {
+    const mark = renderMarkdown("paragraph 1\nstill 1\n\nparagraph 2\nstill 2");
+    const html = parseHTML(
+      "<p>paragraph 1\nstill 1</p><p>paragraph 2\nstill 2</p>",
+    );
     expect(mark).toEqual(html);
   });
 });

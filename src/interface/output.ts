@@ -1,46 +1,54 @@
-import { wait } from "../utils";
+import { wait } from "../utils"
 
 export class Output {
-  private _element: Element;
+  private _element: Element
 
   constructor(outputContainer: Element) {
-    this._element = outputContainer;
+    this._element = outputContainer
   }
 
   printLine(s: string) {
-    let terminalLine = document.createElement("div");
-    terminalLine.className = "out-line";
-    terminalLine.innerText = s;
-    this._element.appendChild(terminalLine);
+    let terminalLine = document.createElement("div")
+    terminalLine.className = "out-line"
+    terminalLine.innerText = s
+    this._element.appendChild(terminalLine)
   }
 
   printLines(s: string[]) {
     for (let l of s) {
-      this.printLine(l);
+      this.printLine(l)
     }
   }
 
   printError(e: Error | string) {
-    let terminalLine = document.createElement("div");
-    terminalLine.className = "out-line error";
-    terminalLine.innerText = `${e}`;
-    this._element.appendChild(terminalLine);
+    let terminalLine = document.createElement("div")
+    terminalLine.className = "out-line error"
+    terminalLine.innerText = `${e}`
+    this._element.appendChild(terminalLine)
   }
 
   async printLineSlow(s: string, delay: number) {
-    let terminalLine = document.createElement("div");
-    terminalLine.className = "out-line";
-    this._element.appendChild(terminalLine);
+    let terminalLine = document.createElement("div")
+    terminalLine.className = "out-line"
+    this._element.appendChild(terminalLine)
     for (let c of s) {
-      terminalLine.textContent = `${terminalLine.textContent}${c}`;
-      await wait(delay);
+      terminalLine.textContent = `${terminalLine.textContent}${c}`
+      // await wait(delay)
     }
   }
 
   clear() {
-    console.log("clear");
-    this._element.innerHTML = "";
+    console.log("clear")
+    this._element.innerHTML = ""
+  }
+
+  render(elem: HTMLElement | HTMLElement[]) {
+    if (Array.isArray(elem)) {
+      elem.forEach((e) => this._element.appendChild(e))
+    } else {
+      this._element.appendChild(elem)
+    }
   }
 }
 
-export default Output;
+export default Output
