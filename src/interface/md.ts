@@ -15,39 +15,47 @@ class Document extends BlockType {
 
 class HeaderBlock extends BlockType {
   element: keyof HTMLElementTagNameMap = "h1"
+  prefix: string
 
   constructor(n: 1 | 2 | 3 | 4 | 5 | 6) {
     super()
     switch (n) {
       case 1:
         this.element = "h1"
+        this.prefix = "#"
         break
 
       case 2:
         this.element = "h2"
+        this.prefix = "##"
+
         break
 
       case 3:
         this.element = "h3"
+        this.prefix = "###"
         break
 
       case 4:
         this.element = "h4"
+        this.prefix = "####"
         break
 
       case 5:
         this.element = "h5"
+        this.prefix = "#####"
         break
 
       default:
         this.element = "h6"
+        this.prefix = "######"
         break
     }
   }
 
   match(line: string): [boolean, string] {
-    if (line.startsWith(this.element + " ")) {
-      return [true, line.substring(3)]
+    if (line.startsWith(this.prefix + " ")) {
+      return [true, line.substring(this.prefix.length + 1)]
     }
     return [false, line]
   }
@@ -110,7 +118,7 @@ class Block {
 
   render(): HTMLElement {
     let element = document.createElement(this.type.element)
-    element.innerText = this.text
+    element.textContent = this.text
     for (let c of this.childs) {
       element.appendChild(c.render())
     }
@@ -205,20 +213,27 @@ const parseBlocks = (content: string): Block => {
         }
       }
 
-      let nextType: BlockType | undefined = NEW_BLOCK_MATCH_ORDER.map((t) =>
-        t.match(line)[0] ? t : undefined,
-      ).find((t) => t)
-      console.log(nextType)
-
-      if (line == "\n") {
+      if (line == "") {
         console.log("close childs")
         openBlock.closeChilds()
+        break
+      }
+
+      let nextType: BlockType | undefined = undefined
+      for (let t of NEW_BLOCK_MATCH_ORDER) {
+        let [match, newLine] = t.match(line)
+        if (match) {
+          nextType = t
+          line = newLine
+          break
+        }
       }
 
       if (nextType) {
         console.log("add at ", openBlock)
         openBlock.closeChilds()
         openBlock.add(new Block(nextType, line))
+        break
       }
 
       if (!nextType && line !== "") {
