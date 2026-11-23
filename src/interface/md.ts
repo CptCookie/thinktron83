@@ -1,24 +1,36 @@
 abstract class BlockType {
   abstract element: keyof HTMLElementTagNameMap
   abstract match(line: string): [boolean, string]
+  open: boolean
+
   closes(_line: string): boolean {
     return false
+  }
+
+  constructor(isContainer: boolean) {
+    this.open = isContainer
   }
 }
 
 class Document extends BlockType {
   element: keyof HTMLElementTagNameMap = "div"
+
+  constructor() {
+    super(true)
+  }
+
   match(line: string): [boolean, string] {
     return [true, line]
   }
 }
 
 class HeaderBlock extends BlockType {
+  open: boolean = false
   element: keyof HTMLElementTagNameMap = "h1"
   prefix: string
 
   constructor(n: 1 | 2 | 3 | 4 | 5 | 6) {
-    super()
+    super(false)
     switch (n) {
       case 1:
         this.element = "h1"
@@ -62,9 +74,18 @@ class HeaderBlock extends BlockType {
 }
 
 class Paragraph extends BlockType {
+  open: boolean = true
   element: keyof HTMLElementTagNameMap = "p"
+
+  constructor() {
+    super(true)
+  }
+
   match(line: string): [boolean, string] {
-    return [true, line]
+    if (line.startsWith("# ")) {
+      return [true, line]
+    }
+    return [false, line]
   }
 
   instantClosedByLine(line: string): boolean {
@@ -105,9 +126,9 @@ class Block {
   text: string
   childs: Block[]
 
-  constructor(type: BlockType, text?: string, open?: boolean) {
+  constructor(type: BlockType, text?: string) {
     this.type = type
-    this.open = true
+    this.open = type.open
     this.text = text || ""
     this.childs = []
   }
@@ -153,6 +174,9 @@ class Block {
   }
 
   match(line: string): [boolean, string] {
+    if (!this.open) {
+      return [false, line]
+    }
     return this.type.match(line)
   }
 }
@@ -171,7 +195,7 @@ export const renderMarkdown = (content: string): HTMLElement => {
  * parse the content into a Markdown AST structure that we can start to render in the next step
  *
  * Algo:
- * - match line along a stack of open Blocks (potententially taking away markers from the line)
+ * - match line along a stack of open Blocks (potententially taking away markers from the beginning of the line)
  * - keep ref to the last matched open block
  * - determine for the remainder of the line
  *   - on a new block start close the other blocks (empty line after Paragraph all in a block comment)
@@ -184,12 +208,10 @@ export const renderMarkdown = (content: string): HTMLElement => {
  * @returns
  */
 const parseBlocks = (content: string): Block => {
-  console.log("parseBlock")
   const root = new Block(new Document())
 
   for (let line of content.split("\n")) {
     let openBlock: Block = root
-    console.log("new Line: ", line)
 
     if (line == "") {
       console.log("close after root")
@@ -201,10 +223,10 @@ const parseBlocks = (content: string): Block => {
       line = line.trimStart()
 
       let [matches, nextLine] = openBlock.match(line)
-      console.log(matches, nextLine)
-      let nextBlock = openBlock.getOpenChild()
-      console.log(nextBlock)
+      console.log(matches, line, openBlock.type)
       if (matches) {
+        let nextBlock = openBlock.getOpenChild()
+
         line = nextLine
         if (nextBlock) {
           // not the end of the stack
@@ -244,7 +266,7 @@ const parseBlocks = (content: string): Block => {
           tip.text = tip.text + "\n" + line
         } else {
           console.log("add at the root", line)
-          root.add(new Block(new Paragraph(), line))
+          openBlock.add(new Block(new Paragraph(), line))
         }
         break
       }

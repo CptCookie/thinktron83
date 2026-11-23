@@ -45,6 +45,12 @@ describe("Markdown tests for basic line elements", () => {
     const html = parseHTML("<h6>text</h6>")
     expect(mark).toEqual(html)
   })
+
+  it("header closes Paragraph", () => {
+    const mark = renderMarkdown("text\n# header")
+    const html = parseHTML("<p>text</p><h1>header</h1>")
+    expect(mark).toEqual(html)
+  })
 })
 
 describe("Markdown tests for block elements", () => {

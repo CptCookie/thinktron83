@@ -36,7 +36,7 @@ class ThinkTron {
     }
 
     this.start_sequence().finally(() => {
-      this.out.render(renderMarkdown("## Header\nParagraph"))
+      this.out.render(renderMarkdown("some text\n# head"))
       document.addEventListener("keydown", this.handleKeyEvent)
       this.input.enable()
     })
